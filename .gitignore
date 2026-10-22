@@ -68,3 +68,27 @@ reelzy-frontend/linux/build/
 .DS_Store?
 Thumbs.db
 desktop.ini
+
+# Obsidian Circle (apps/api, apps/web)
+.env
+.env.local
+.env.*.local
+apps/web/.env.local
+apps/api/data/
+data/
+apps/data/
+data/uploads/
+*.sqlite
+*.sqlite-journal
+apps/web/.next/
+apps/api/node_modules/.cache
+node_modules/
+*.db
+*.db-journal
+apps/api/data/
+node_modules/
+*.db
+*.db-journal
+apps/api/data/
+apps/web/.next/
+dl-server.js

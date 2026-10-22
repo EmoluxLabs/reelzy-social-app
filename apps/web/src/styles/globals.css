@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html, body {
+  height: 100%;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+html:not(.dark) {
+  color-scheme: light;
+}
+
+body {
+  @apply bg-obs-bg text-obs-text font-sans antialiased;
+}
+html:not(.dark) body {
+  @apply bg-light-bg text-light-text;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+.dark ::-webkit-scrollbar-thumb { background: #1e2a4a; border-radius: 4px; }
+:not(.dark) ::-webkit-scrollbar-thumb { background: #c7cfe0; border-radius: 4px; }
+
+/* Reels / vertical feed */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-brand-gradient text-white shadow-glow-sm hover:shadow-glow;
+  }
+  .btn-ghost {
+    @apply btn border border-obs-border/60 text-obs-text hover:bg-white/5;
+  }
+  html:not(.dark) .btn-ghost { @apply border-light-border text-light-text hover:bg-black/5; }
+  .btn-danger {
+    @apply btn bg-red-600 text-white hover:bg-red-700;
+  }
+  .card {
+    @apply bg-obs-panel border border-obs-border/60 rounded-2xl;
+  }
+  html:not(.dark) .card { @apply bg-light-panel border-light-border; }
+  .input {
+    @apply w-full bg-black/20 border border-obs-border/60 rounded-xl px-4 py-2.5 text-sm text-obs-text placeholder:text-obs-muted focus:outline-none focus:border-obs-blue focus:ring-1 focus:ring-obs-blue;
+  }
+  html:not(.dark) .input {
+    @apply bg-white border-light-border text-light-text placeholder:text-light-muted;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium;
+  }
+  .chip-basic { @apply chip bg-slate-500/20 text-slate-300; }
+  .chip-premium { @apply chip bg-cyan-500/20 text-cyan-300; }
+  .chip-epic { @apply chip bg-purple-500/20 text-purple-300; }
+  .chip-legendary { @apply chip bg-amber-500/20 text-amber-300; }
+  .chip-limited { @apply chip bg-pink-500/20 text-pink-300; }
+
+  .nav-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl text-obs-dim transition hover:text-obs-text hover:bg-white/5;
+  }
+  html:not(.dark) .nav-item { @apply text-light-dim hover:text-light-text hover:bg-black/5; }
+  .nav-item.active {
+    @apply text-obs-text bg-white/5 shadow-glow-sm;
+  }
+  html:not(.dark) .nav-item.active { @apply text-light-text bg-blue-50; }
+
+  .gift-glow { filter: drop-shadow(0 0 12px rgba(59,130,246,0.6)); }
+  .brand-gradient-text {
+    @apply bg-clip-text text-transparent bg-brand-gradient;
+  }
+}
+
+/* Animations for gift particles */
+@keyframes riseUp {
+  0% { transform: translateY(0) scale(0.8); opacity: 1; }
+  100% { transform: translateY(-120px) scale(1.2); opacity: 0; }
+}
+.particle { animation: riseUp 1.5s ease-out forwards; }
+
+/* Reels vertical snap */
+.reels-container {
+  scroll-snap-type: y mandatory;
+}
+.reel-item {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}

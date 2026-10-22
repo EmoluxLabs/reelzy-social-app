@@ -1,0 +1,12 @@
+{
+  "name": "Obsidian Circle",
+  "short_name": "OC",
+  "description": "Connect. Create. Go Live.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#05070d",
+  "theme_color": "#2563eb",
+  "icons": [
+    { "src": "/oc-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

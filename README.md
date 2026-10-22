@@ -1,432 +1,252 @@
-# Reelzy - Social Media & Short Video Platform
+# Obsidian Circle (OC)
 
-<div align="center">
+> The social layer for the Obsidian Network — posts, reels, live rooms, 1:1 calls,
+> DMs, and a native double-entry OC wallet with 320 built-in virtual gifts.
 
-<img src="assets/icon/app_icon.png.png" width="160" alt="Reelzy Logo"/>
-
-**A feature-rich social media platform for sharing short videos, stories, and connecting with friends**
-
-[![Flutter](https://img.shields.io/badge/Flutter-3.7.0-02569B?logo=flutter)](https://flutter.dev)
-[![Node.js](https://img.shields.io/badge/Node.js-Express-339933?logo=node.js)](https://nodejs.org)
-[![MongoDB](https://img.shields.io/badge/MongoDB-Database-47A248?logo=mongodb)](https://www.mongodb.com)
-[![Socket.IO](https://img.shields.io/badge/Socket.IO-Real--time-010101?logo=socket.io)](https://socket.io)
-[![Firebase](https://img.shields.io/badge/Firebase-Auth-FFCA28?logo=firebase)](https://firebase.google.com)
-
-[Features](#features) • [Tech Stack](#tech-stack) • [Installation](#installation) • [Performance](#performance--testing) • [Demo](#demo)
-
-</div>
+Obsidian Circle is a production-ready web app backed by a single-process Node.js
+API (Express + sql.js SQLite-on-disk) and a Next.js 14 frontend (App Router).
+Monetization is native to the protocol layer: every gift settles as a 70/30
+split between creator and platform, instantly, with no third-party processor.
 
 ---
 
-## Overview
+## Stack
 
-Reelzy is a modern social media application that combines the core features of leading platforms like TikTok, Instagram, and Snapchat. Built with Flutter for cross-platform mobile development and Node.js for a robust backend, Reelzy offers real-time messaging, video sharing, stories, and WebRTC-powered voice/video calls.
-
-**Production-Ready and Battle-Tested**: This application has been rigorously tested with bulk seeded data including thousands of reels, posts, user interactions, comments, and messages. Performance remains smooth and responsive even under heavy load.
-
----
-
-## Demo
-
-### Full App Walkthrough
-
-<div align="center">
-  <a href="https://youtu.be/c4MJoybF7N8?si=pSx8JYZ-Dm6Wqql9">
-    <img src="https://img.youtube.com/vi/c4MJoybF7N8/maxresdefault.jpg" alt="Reelzy - Full App Demo" width="700"/>
-  </a>
-  <p><b>Click to watch the complete feature demonstration</b></p>
-  <p><i>See all features in action: Authentication, Reels, Messaging, Calls, Stories, and more.</i></p>
-</div>
-
----
-
-### App Screenshots
-
-<p align="center">
-  <img src="assets/reelzy.jpeg" width="100%" alt="App 1"/>
-</p>
-
-<p align="center">
-  <img src="assets/reelzy1.jpeg" width="100%" alt="App 2"/>
-</p>
-
-<p align="center">
-  <img src="assets/reelzy3.jpeg" width="100%" alt="App 2"/>
-</p>
-
----
+| Layer     | Tech                                                                        |
+|-----------|-----------------------------------------------------------------------------|
+| Frontend  | Next.js 14 (App Router), Tailwind, lucide-react, Zustand, socket.io-client  |
+| Backend   | Express 4, socket.io, zod, bcrypt, jsonwebtoken, better-sqlite3-style sql.js|
+| Ledger    | Double-entry integer math (O(1) per transfer, ACID inside a single tx())    |
+| Storage   | SQLite (`data/oc.sqlite`), uploaded media in `data/uploads/`                |
+| Chain     | Obsidian Network L1 (bech32m `obs1…` addresses; native RPC on :8630)        |
+| Streaming | Built-in WebRTC mesh for calls; optional LiveKit adapter for live rooms     |
 
 ## Features
 
-### Video & Media
-- **Short Video Reels** - Upload and watch engaging short-form videos
-- **Video Thumbnails** - Auto-generated thumbnails for better preview
-- **Like, Save & Share** - Full engagement features for all content
-- **Video Player Controls** - Smooth playback with custom controls
-- **Infinite Scroll** - Seamless feed experience with pagination
+- **Auth**: JWT (httpOnly cookie + bearer), bcrypt hashing, registration/login/logout,
+  cookie-based Socket.IO authentication, wallet signature challenge for on-chain
+  account linking.
+- **Social feed**: posts, reels (vertical video), hashtags, likes, comments,
+  saves, follows, follower/following tabs, public profiles, search.
+- **Real-time**: DMs over Socket.IO with conversation membership checks; typing
+  indicators; presence; live-room chat, viewer tracking, WebRTC signaling, and
+  gift fan-out; live notifications for follow/like/comment/gift/deposit.
+- **Wallet**: double-entry OC ledger with explicit accounts (`USER_OC`,
+  `CREATOR_EARNINGS`, `PLATFORM_GIFT_REVENUE`, `RESERVED_PAYOUT`,
+  `ESCROW_DEPOSIT`, `BONUS_LIABILITY`); deposit intents and withdrawals with
+  idempotency keys; 60-second expiry sweeper; admin reconciliation endpoint.
+- **Gifts**: 320 virtual gifts (1 OC – 10,000 OC), client-side animation,
+  70/30 creator/platform split with on-platform notification and outbox event.
+  Gift OC lands in `CREATOR_EARNINGS` and converts 1:1 to spendable `USER_OC`.
+- **Admin**: reconciliation, user search, withdrawal approval, credit (airdrop).
+- **Responsive** mobile-first UI with dark/light theme toggle and persisted
+  preference.
 
-### Real-time Messaging
-- **Socket.IO Integration** - Instant message delivery
-- **Text & Image Messages** - Rich media messaging support
-- **Typing Indicators** - Real-time typing status
-- **Push Notifications** - FCM-powered notifications for new messages
-- **Read Receipts** - Track message delivery and read status
-- **Message History** - Persistent chat history with pagination
+## Quick start
 
-### Voice & Video Calls
-- **WebRTC Integration** - High-quality peer-to-peer calls
-- **Audio Calls** - Clear voice communication
-- **Video Calls** - Face-to-face video conversations
-- **Call Notifications** - Incoming call alerts with push notifications
-- **Call Controls** - Mute, speaker, and camera toggle
-
-### Stories
-- **24-hour Stories** - Share temporary content that disappears
-- **Story Viewer** - Story viewing experience with progress indicators
-- **Story Feed** - See stories from people you follow
-- **Media Upload** - Photo and video stories
-
-### Social Features
-- **User Profiles** - Customizable profiles with bio and profile pictures
-- **Follow System** - Follow/unfollow users with real-time updates
-- **Activity Feed** - See what your network is up to
-- **Search Users** - Find and connect with friends
-- **Posts & Comments** - Share thoughts and engage with content
-- **Nested Comments** - Reply to comments with threading support
-- **Like & Save** - Bookmark favorite content
-
-### Authentication
-- **Email/Password** - Traditional authentication
-- **Google Sign-In** - One-tap Google authentication
-- **Facebook Login** - Facebook OAuth integration
-- **Apple Sign-In** - Apple ID authentication (iOS)
-- **Password Reset** - Secure password recovery
-
-### User Interface
-- **Modern Design** - Clean and intuitive UI/UX
-- **Smooth Animations** - Polished transitions and effects
-- **Responsive Layout** - Adapts to different screen sizes
-- **Bottom Navigation** - Easy access to main features
-- **Pull-to-Refresh** - Update feeds with swipe gesture
-
----
-
-## Tech Stack
-
-### Frontend (Flutter)
-```yaml
-Flutter SDK: 3.7.0
-Language: Dart
-
-Key Dependencies:
-├── get: ^4.7.2                    # State management
-├── firebase_core: ^3.14.0         # Firebase integration
-├── firebase_auth: ^5.6.0          # Authentication
-├── socket_io_client: ^3.1.3       # Real-time messaging
-├── flutter_webrtc: ^1.2.1         # Video/audio calls
-├── firebase_messaging: ^15.2.10   # Push notifications
-├── video_player: ^2.10.0          # Video playback
-├── image_picker: ^1.1.2           # Media selection
-├── cloud_firestore: ^5.6.9        # Cloud database
-├── google_sign_in: ^6.3.0         # Google OAuth
-├── sign_in_with_apple: ^7.0.1     # Apple Sign-In
-├── flutter_facebook_auth: ^7.1.5  # Facebook OAuth
-└── google_fonts: ^6.3.3           # Custom fonts
-```
-
-### Backend (Node.js)
-```json
-Runtime: Node.js
-Framework: Express 5.1.0
-
-Dependencies:
-├── express: ^5.1.0                # Web framework
-├── socket.io: ^4.8.1              # Real-time engine
-├── mongoose: ^8.16.3              # MongoDB ODM
-├── aws-sdk: ^2.1692.0             # AWS S3 integration
-├── firebase-admin: ^13.6.0        # Push notifications
-├── multer: ^1.4.5-lts.1           # File uploads
-├── helmet: ^8.1.0                 # Security middleware
-├── express-rate-limit: ^7.5.1    # Rate limiting
-└── cors: ^2.8.5                   # CORS handling
-```
-
-### Infrastructure
-- **Database**: MongoDB (Cloud/Atlas)
-- **Storage**: AWS S3 + CloudFront CDN
-- **Authentication**: Firebase Auth
-- **Push Notifications**: Firebase Cloud Messaging (FCM)
-- **Real-time**: Socket.IO
-- **Hosting**: Render/AWS
-- **Media Processing**: FFmpeg for thumbnails
-
----
-
-## Installation
-
-### Prerequisites
-- Flutter SDK 3.7.0+
-- Node.js 18+
-- MongoDB (local or Atlas)
-- AWS Account (S3 bucket)
-- Firebase Project
-
-### Backend Setup
-
-1. **Clone the repository**
-```bash
-git clone https://github.com/samimalikdev/reelzy-social-app.git
-cd reelzy-social-app/reelzy-backend
-```
-
-2. **Install dependencies**
 ```bash
 npm install
+cp .env.example .env
+# edit .env — set JWT_SECRET (production); OBS_RPC_URL/TREASURY for chain hooks
+
+npm run db:migrate   # creates apps/api/data/oc.sqlite and applies migrations
+npm run db:seed      # seeds demo admin, 320 gifts, and a few sample posts/users
+npm run dev          # starts api :4000 and web :3000 (concurrently)
 ```
 
-3. **Configure environment variables**
+Open <http://localhost:3000>.
 
-Create `.env` file:
-```env
-# MongoDB
-MONGODB_URI=mongodb://localhost:27017/reelzy
+### Demo account (after seed)
 
-# AWS S3
-AWS_ACCESS_KEY_ID=your_access_key
-AWS_SECRET_ACCESS_KEY=your_secret_key
-AWS_REGION=us-east-1
-AWS_S3_BUCKET=your-bucket-name
-CDN_URL=your-cloudfront-url
+- Username: `obsidian`
+- Password: `Admin2026!`
+- Role: `super` (admin console at `/admin`)
 
-# Server
-PORT=3000
-FILES_STORAGE_LOCATION=s3
-```
+Seed starts the admin wallet at 0 OC — credit yourself via the admin console
+or `POST /api/admin/credit` (dev only). In production, replace with a real
+deposit flow or OBS airdrop.
 
-4. **Add Firebase Admin SDK**
-- Download `firebase-service-account.json` from Firebase Console
-- Place in `src/` directory
+### Production build
 
-5. **Start the server**
 ```bash
-# Development
-npm run dev
-
-# Production
-npm start
+npm run build   # builds web (Next.js production bundle)
+npm start       # runs node src/index.js (API) + next start -p 3000
 ```
 
-### Frontend Setup
+Put the web server behind a reverse proxy (nginx/Caddy/Cloudflare) terminating
+TLS; set `CORS_ORIGIN=https://yourdomain`; set a strong `JWT_SECRET`.
 
-1. **Navigate to frontend**
+## Environment variables
+
+See `.env.example`. The critical ones:
+
+| Variable                  | Purpose                                                  |
+|---------------------------|----------------------------------------------------------|
+| `PORT`                    | API port (default `4000`)                                |
+| `CORS_ORIGIN`             | Allowed frontend origin (e.g. `https://oc.example`)      |
+| `JWT_SECRET`              | HMAC secret for tokens — **rotate per environment**      |
+| `JWT_EXPIRES_IN`          | Token lifetime (default `7d`)                            |
+| `BCRYPT_ROUNDS`           | bcrypt cost (default `12`)                               |
+| `OBS_RPC_URL`             | Obsidian L1 RPC endpoint for deposit confirmations       |
+| `OBS_TREASURY_ADDRESS`    | Destination address for user deposits (qr code)          |
+| `OBS_TREASURY_PRIVATE_KEY`| Treasury key used to sign approved withdrawals           |
+| `OBS_CHAIN_ID`            | Obsidian chain-id: 7777 mainnet / 7778 devnet            |
+| `OBS_REQUIRED_CONFIRMATIONS` | Blocks before a deposit is credited (default 6)       |
+| `LIVEKIT_*`               | Optional SFU for large live rooms (mesh works for <6)    |
+| `UPLOAD_DIR` / `MAX_UPLOAD_MB` | Media upload location / cap                         |
+| `RATE_LIMIT_MAX` / `AUTH_RATE_LIMIT_MAX` / `GIFT_RATE_LIMIT_MAX` | Global/auth/gift per-minute caps |
+
+If `OBS_RPC_URL` is unset the API logs a notice and runs in dev mode: deposit
+confirmation is stubbed (intents expire after 60 seconds) so flows still work
+end-to-end against a mock flow.
+
+## Ledger invariants
+
+Every ledger movement uses integer `BIGINT` math on OC subunits.
+
+- 1 OBS = 1,000,000 OC (fixed).
+- 70% of every gift → creator `CREATOR_EARNINGS`; 30% → platform
+  `PLATFORM_GIFT_REVENUE`.
+- Withdrawals move `USER_OC` → `RESERVED_PAYOUT` at request time and release to
+  the chain on admin approval; an approval failure rolls `RESERVED_PAYOUT` back.
+- Earnings convert 1:1 into `USER_OC` (no fee).
+- `POST /api/admin/reconciliation` returns per-account totals plus any
+  unresolved deposits/withdrawals. The sum of all account balances should equal
+  `0` for a healthy ledger (liabilities are stored as negative balances).
+
+## HTTP API overview
+
+All authenticated endpoints accept the session cookie set on
+`/api/auth/login`, or a bearer `Authorization: Bearer <token>` header.
+
+```
+POST   /api/auth/register
+POST   /api/auth/login
+POST   /api/auth/logout
+GET    /api/auth/me
+
+GET    /api/users/me
+GET    /api/users/:username
+POST   /api/users/:username/follow
+POST   /api/users/:username/unfollow
+GET    /api/users/search/:query
+GET    /api/users/:username/followers
+GET    /api/users/:username/following
+
+GET    /api/posts/feed
+GET    /api/posts/discover
+GET    /api/posts/reels
+GET    /api/posts/search?query=
+POST   /api/posts
+GET    /api/posts/:id
+DELETE /api/posts/:id
+POST   /api/posts/:id/like
+POST   /api/posts/:id/unlike
+POST   /api/posts/:id/comments
+POST   /api/posts/:id/save
+
+GET    /api/gifts/catalog
+POST   /api/gifts/send
+
+GET    /api/users/me/wallet
+POST   /api/wallet/deposits/intent
+POST   /api/wallet/link/challenge
+POST   /api/wallet/link/confirm
+POST   /api/wallet/withdrawals
+GET    /api/wallet/withdrawals
+POST   /api/wallet/earnings/convert
+GET    /api/wallet/deposit-address
+
+GET    /api/notifications
+POST   /api/notifications/read-all
+POST   /api/notifications/:id/read
+
+POST   /api/chat/conversations
+GET    /api/chat/conversations
+GET    /api/chat/conversations/:id/messages
+POST   /api/chat/conversations/:id/messages
+
+POST   /api/live/rooms
+GET    /api/live/rooms
+POST   /api/live/rooms/:id/join
+POST   /api/live/rooms/:id/leave
+POST   /api/calls/offer
+POST   /api/calls/answer
+
+GET    /api/admin/reconciliation
+GET    /api/admin/users
+GET    /api/admin/withdrawals
+POST   /api/admin/withdrawals/:id/approve
+POST   /api/admin/credit            # super / finance only
+```
+
+## Socket.IO events
+
+Authenticated via the session cookie on handshake (re-validated server-side;
+suspended users are rejected).
+
+| Event                 | Direction | Payload                                                |
+|-----------------------|-----------|--------------------------------------------------------|
+| `join_conversation`   | c→s       | `{ conversationId }` (must be a member)                |
+| `leave_conversation`  | c→s       | `{ conversationId }`                                   |
+| `chat_message`        | c→s→room  | `{ conversationId, text }`                             |
+| `typing`              | c→s→room  | `{ conversationId }`                                   |
+| `join_live`           | c→s       | `{ roomId }`                                           |
+| `leave_live`          | c→s       | `{ roomId }`                                           |
+| `live_chat`           | c→s→room  | `{ roomId, text }`                                     |
+| `signal`              | c→s→peer  | `{ roomId, to, payload }`                              |
+| `notification`        | s→c       | real-time inbox push (follow/like/comment/gift/deposit)|
+| `gift`                | s→room    | in-room gift animation broadcast                       |
+| `outbox`              | s→user    | generic push for all notifications                     |
+
+## Project layout
+
+```
+packages/shared/   # constants, economics (parseObsAmount), bech32m address lib, id generator
+apps/api/          # Express + Socket.IO API
+  src/index.js              # server entry, socket authz, outbox/sweeper loops
+  src/routes/*.js           # REST endpoints
+  src/services/
+    ledger.js               # double-entry primitives (debit/credit/transfer)
+    notifications.js        # unified DB+outbox notification helper
+    obsidian.js             # bech32m address + RPC client stubs
+  src/db/
+    index.js                # sql.js driver, migrations, tx()
+    migrations/             # SQL migration files
+  src/seeds/                # seed data (admin, gifts, demo posts)
+apps/web/          # Next.js App Router frontend
+  src/app/                  # routes (each folder is a page)
+  src/components/           # shared UI (Avatar, PostCard, Sidebar, TopBar, …)
+  src/lib/api.js            # fetch wrapper with cookie auth
+  src/lib/utils.js          # number/time formatters
+  src/store/                # Zustand stores (auth, chat)
+```
+
+## Tests
+
 ```bash
-cd ../reelzy-frontend
+npm test
 ```
 
-2. **Install dependencies**
-```bash
-flutter pub get
-```
+Covers the shared economics module (OC/OBS conversion, 70/30 split
+determinism, gift price bounds), Obsidian bech32m address validation,
+and API-layer ledger flows.
 
-3. **Configure Firebase**
-```bash
-# Install FlutterFire CLI
-dart pub global activate flutterfire_cli
+## Security notes
 
-# Configure Firebase for your project
-flutterfire configure
-```
-
-4. **Update API endpoint**
-
-Edit `lib/controller/api/api_controller.dart`:
-```dart
-static const String baseUrl = 'https://your-backend-url.com';
-```
-
-5. **Run the app**
-```bash
-# iOS
-flutter run -d ios
-
-# Android
-flutter run -d android
-
-# All devices
-flutter run
-```
-
----
-
-## Performance & Testing
-
-### Load Testing Results
-
-Reelzy has been extensively tested with production-scale data to ensure reliability and performance:
-
-**Data Scale Testing:**
-- **10,000+** video reels uploaded and played
-- **50,000+** user posts and comments
-- **100,000+** user interactions (likes, saves, shares)
-- **25,000+** real-time messages exchanged
-- **1,000+** concurrent socket connections
-- **5,000+** user accounts created
-
-**Performance Metrics:**
-- **Real-time messaging**: < 100ms latency
-- **Video playback**: Smooth 60fps rendering
-- **Feed loading**: < 2s for initial load
-- **Socket reconnection**: Automatic with exponential backoff
-- **Image/video upload**: Optimized with CDN delivery
-- **Database queries**: Indexed and optimized for speed
-
-**Stability:**
-- **Zero crashes** during stress testing
-- **Memory efficient**: Proper cleanup and disposal
-- **Network resilient**: Handles poor connectivity gracefully
-- **Background stable**: FCM notifications work reliably
-
----
-
-## Architecture
-
-### System Architecture
-```
-┌─────────────────┐
-│  Flutter App    │
-│  (iOS/Android)  │
-└────────┬────────┘
-         │
-         ├─── HTTP/REST ────┐
-         │                  │
-         ├─── Socket.IO ────┤
-         │                  ├──► ┌──────────────┐
-         └─── WebRTC ───────┘    │  Node.js API │
-                                 │   + Socket   │
-                                 └──────┬───────┘
-                                        │
-                    ┌───────────────────┼───────────────────┐
-                    │                   │                   │
-              ┌─────▼─────┐      ┌─────▼─────┐      ┌─────▼─────┐
-              │  MongoDB  │      │   AWS S3  │      │ Firebase  │
-              │           │      │    CDN    │      │    FCM    │
-              └───────────┘      └───────────┘      └───────────┘
-```
-
-### State Management (GetX)
-- **Controllers**: Business logic and state
-- **Services**: Core functionality (auth, chat, calls)
-- **Reactive**: Automatic UI updates with `.obs` and `Obx()`
-
-### Real-time Communication
-1. **Socket.IO**: Instant messaging, typing indicators
-2. **WebRTC**: Peer-to-peer audio/video calls
-3. **FCM**: Push notifications when app is backgrounded
-
----
-
-### Socket Events
-```javascript
-// Client → Server
-socket.emit('register', { userId })
-socket.emit('send_message', { senderId, receiverId, text, imageUrl })
-socket.emit('typing', { senderId, receiverId, isTyping })
-socket.emit('call:start', { callerId, receiverId, callerName, callType })
-socket.emit('call:accept', { callerId, receiverId })
-socket.emit('call:offer', { callerId, receiverId, offer })
-socket.emit('call:answer', { callerId, receiverId, answer })
-socket.emit('call:ice', { senderId, receiverId, candidate })
-socket.emit('call:end', { callerId, receiverId })
-
-// Server → Client
-socket.on('registered', (data) => {})
-socket.on('message', (data) => {})
-socket.on('typing', (data) => {})
-socket.on('call:incoming', (data) => {})
-socket.on('call:accepted', (data) => {})
-socket.on('call:offer', (data) => {})
-socket.on('call:answer', (data) => {})
-socket.on('call:ice', (data) => {})
-socket.on('call:end', () => {})
-```
-
----
-
-## Security Features
-
-- **Helmet.js**: Security headers and XSS protection
-- **Rate Limiting**: API request throttling (100 requests/hour per IP)
-- **Firebase Auth**: Secure authentication with JWT
-- **Input Validation**: Sanitized user inputs
-- **CORS**: Controlled cross-origin requests
-- **Token Validation**: FCM token verification before push
-- **Error Handling**: Graceful error responses without exposing internals
-- **HTTPS**: Encrypted data transmission
-
----
-
-## Contributing
-
-Contributions are welcome. Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
+- Passwords hashed with bcrypt (configurable rounds).
+- JWT in httpOnly + SameSite=Lax cookie (and bearer fallback for mobile).
+- CORS restricted to `CORS_ORIGIN`. Helmet is active; CSP is managed by
+  Next.js on the web side.
+- Rate limits on global, auth, and gift endpoints (see env vars).
+- All ledger-mutating routes require idempotency keys where user error can
+  duplicate moves (gifts, withdrawals).
+- Socket.IO handlers enforce conversation membership, live-room viewer rows,
+  and peer scope before relaying messages.
+- Admin endpoints gated on role (`super` / `moderator` / `finance`).
+- Inputs validated with `zod` schemas; BigInt responses coerced to strings
+  via a response-json sanitizer.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## Developer
-
-**Sami Malik**
-- GitHub: [@samimalikdev](https://github.com/samimalikdev)
-- Email: samimalik33334@gmail.com
-
----
-
-## Acknowledgments
-
-- Flutter team for the framework
-- Socket.IO for real-time capabilities
-- Firebase for authentication and push notifications
-- AWS for reliable cloud storage
-- GetX for state management
-- WebRTC for peer-to-peer communication
-
----
-
-## Support
-
-For support, email samimalik33334@gmail.com or open an issue in this repository.
-
----
-
-## Future Enhancements
-
-- [ ] Live streaming functionality
-- [ ] AR filters for videos and stories
-- [ ] Group video calls
-- [ ] Monetization features
-- [ ] Advanced analytics dashboard
-- [ ] Content moderation AI
-- [ ] Multi-language support
-- [ ] Desktop application (Windows, macOS, Linux)
-
----
-
-<div align="center">
-
-**Built with Flutter & Node.js**
-
-Star this repo if you find it helpful.
-
-**Tested at Scale • Production Ready • Built to Perform**
-
-</div>
+Proprietary — © EmoluxLabs / Obsidian Network contributors.
